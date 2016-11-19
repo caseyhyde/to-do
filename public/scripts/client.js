@@ -1,21 +1,22 @@
-console.log("TEST!");
-
 $(document).ready(function() {
-
-  $('#tasks').append('<h1>HELLO!!!</h1>');
   console.log("javascript running!");
 
-  $('button').on('click', getTasks);
+  $('button').on('click', getTasks); //button click to get tasks from sever/DB
 
 });
 
-function getTasks() {
+function getTasks() { // route to get tasks from sever/db
   $.ajax({
     type: 'GET',
     url: '/tasks',
     success: function(tasks) {
-      $('#tasks').append('<p>' + tasks + '</p>');
-      console.log(tasks);
+      appendTasks(tasks);
     }
   });
+}
+
+function appendTasks(tasks) {
+  for (var i = 0; i < tasks.length; i++) {
+    $('#tasks').append('<p>' + tasks[i].task_name + "<br>" + tasks[i].task_details + '</p>');
+  }
 }
