@@ -1,8 +1,10 @@
 $(document).ready(function() {
   console.log("javascript running!");
 
-  $('button').on('click', getTasks); //button click to get tasks from sever/DB
+  getTasks();
+
   $('#tasks').on('click', '.delete', deleteTask); //button click to delete specific task from DB
+  $('#tasks').on('click', '.update', updateTask); //button click to update task
 
 });
 
@@ -20,7 +22,15 @@ function getTasks() { // route to get tasks from sever/db
 function appendTasks(tasks) {
   $('#tasks').empty();
   for (var i = 0; i < tasks.length; i++) {
-    $('#tasks').append('<div class="task" id="task' + tasks[i].id + '"><p class="task_name">' + tasks[i].task_name + '</p><p class ="task_details">' + tasks[i].task_details + '</p><button class="delete">DELETE</button></div>');
+    $('#tasks').append(
+      '<div class="task" id="task' + tasks[i].id +
+      '"><input type="checkbox"/><input class="task_name" name="task_name" value="' +
+      tasks[i].task_name + '"/><input class="task_details"' +
+      'name="task_details" value="' + tasks[i].task_details +
+      '"/><button class="delete">DELETE</button>' +
+      '<button class="update">UPDATE</button></div>'
+    );
+
     $('#tasks').children().last().data('taskId', tasks[i].id);
   }
 }
@@ -40,4 +50,31 @@ function deleteTask() {
       console.log("Could not delete that task");
     }
   });
+}
+
+function updateTask() {
+  var taskId = $(this).parent().data('taskId');
+  var task = {};
+  var fields = $(this).parent().children().serializeArray();
+  fields.forEach(function(field) {
+    task[field.name] = field.value;
+  });
+  console.log(task);
+
+  $.ajax({
+    type: 'PUT',
+    url: '/tasks/' + taskId,
+    data: task,
+    success: function(result) {
+      console.log("Updated task");
+      getTasks();
+    },
+    error: function(result) {
+      console.log("Could not update");
+    }
+  });
+}
+
+function completeTask() {
+
 }

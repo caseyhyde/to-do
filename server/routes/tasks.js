@@ -36,7 +36,7 @@ router.delete('/:taskId', function(req, res) {
       res.sendStatus(500);
     }
 
-    client. query('DELETE FROM tasks WHERE id = $1', [taskId], function(err, result) {
+    client.query('DELETE FROM tasks WHERE id = $1', [taskId], function(err, result) {
       done();
 
       if(err) {
@@ -45,8 +45,31 @@ router.delete('/:taskId', function(req, res) {
         res.sendStatus(200);
       }
     });//close query function
-
   }); //close connect
 }); //end route
+
+router.put('/:taskId', function(req, res) {
+  var taskId = req.params.taskId;
+  var task = req.body;
+  console.log("Update route hit!");
+
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log("Error updating database");
+      res.sendStatus(500);
+    }
+
+    client.query('UPDATE tasks SET task_name=$1, task_details=$2' +
+    'WHERE id=$3', [task.task_name, task.task_details, taskId], function(err, result) {
+      done()
+      if(err) {
+        console.log("Unable to update database");
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(200);
+      }
+    });//close query
+  });//close connect
+});//end route
 
 module.exports = router;
