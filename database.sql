@@ -1,7 +1,19 @@
-CREATE TABLE tasks (
+CREATE TABLE current_tasks (
   id SERIAL PRIMARY KEY,
   task_name VARCHAR(50),
   task_details VARCHAR(1000)
+ );
+
+ CREATE TABLE completed_tasks (
+   id SERIAL PRIMARY KEY,
+   task_name VARCHAR(50),
+   task_details VARCHAR(1000)
+ );
+
+ CREATE TABLE future_tasks (
+   id SERIAL PRIMARY KEY,
+   task_name VARCHAR(50),
+   task_details VARCHAR(1000)
  );
 
  INSERT INTO task (task_name, task_details)

@@ -78,3 +78,7 @@ function updateTask() {
 function completeTask() {
 
 }
+
+function addTask() {
+
+}
