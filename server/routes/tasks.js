@@ -3,7 +3,8 @@ var router = express.Router();
 var pg = require('pg');
 var connectionString = 'postgres://localhost:5432/to-do';
 
-router.get('/', function(req, res) { //route for getting tasks from database
+router.get('/:getUrl', function(req, res) { //route for getting tasks from database
+  var table = req.params.getUrl;
   console.log("Get request received from client");
   pg.connect(connectionString, function(err, client, done) {
 
@@ -12,7 +13,7 @@ router.get('/', function(req, res) { //route for getting tasks from database
       res.sendStatus(500); //send 500 status back to client.js
     }
 
-    client.query('SELECT * FROM current_tasks', function(err, result) {
+    client.query('SELECT * FROM ' + table, function(err, result) {
       done(); //end query
 
       if(err) { //if error in query:

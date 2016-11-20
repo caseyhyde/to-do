@@ -1,10 +1,16 @@
 /**************************
 GLOBAL STORAGE FOR TASKS
 *************************/
+var currentTasks = [];
+var completedTasks = [];
 
+/*******************************
+ON DOCUMENT READY
+********************************/
 $(document).ready(function() {
   console.log("Document ready!");
-  getTasks();
+  getTasks(currentTasks, 'current_tasks');
+  // getTasks(completedTasks, 'completed_tasks');
 /*****************
 EVENT LISTENERS
 ******************/
@@ -21,16 +27,17 @@ EVENT LISTENERS
   // $('#completeTasks').on('click', )
 });
 
-function getTasks() { // route to get tasks from sever/db
+function getTasks(taskType, getUrl) { // route to get tasks from sever/db
   $.ajax({
     type: 'GET',
-    url: '/tasks',
+    url: '/tasks/' + getUrl,
     success: function(tasks) {
+      taskType = tasks;
       console.log("%cTasks received from GET request: ", "font-size: large; background-color: blue; color: yellow");
       for (var i = 0; i < tasks.length; i++) {
         console.log("%c" + tasks[i].task_name, "color: yellow; text-align: right");
       }
-      appendTasks(tasks);
+      appendTasks(taskType);
     },
     error: function() {
       console.log("Failed to GET tasks from server");
@@ -68,7 +75,7 @@ function deleteTask(clickLocation) {
     url: '/tasks/' + taskId, //Which task to delete
     success: function(response) {
       console.log(response);
-      getTasks();
+      removeTaskFromDOM(clickLocation);
     },
     error: function() {
       console.log("Could not delete that task");
@@ -76,10 +83,15 @@ function deleteTask(clickLocation) {
   });
 }
 
+function removeTaskFromDOM(clickLocation) {
+  $(clickLocation).parent().remove();
+}
+
 function updateTask() {
-  var taskId = $(this).parent().data('taskId');
+  var $el = $(this);
+  var taskId = $($el).parent().data('taskId');
   var task = {};
-  var fields = $(this).parent().children().serializeArray();
+  var fields = $($el).parent().children().serializeArray();
   fields.forEach(function(field) {
     task[field.name] = field.value;
   });
@@ -91,12 +103,20 @@ function updateTask() {
     data: task,
     success: function(result) {
       console.log("Updated task");
-      getTasks();
+      console.log("TASK: ", task);
+      updateTaskOnDOM($el, task); //rather than get all data from server again, just remove from dom after removing from server.
     },
     error: function(result) {
       console.log("Could not update");
     }
   });
+}
+
+function updateTaskOnDOM(clickLocation, task) {
+  console.log(clickLocation);
+  console.log(task);
+  $(clickLocation).prev().prev().prev().val(task.task_name);
+  $(clickLocation).prev().prev().val(task.task_details);
 }
 
 function completeTask() {
