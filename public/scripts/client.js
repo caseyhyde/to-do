@@ -1,20 +1,24 @@
+/**************************
+GLOBAL STORAGE FOR TASKS
+*************************/
+
 $(document).ready(function() {
-  console.log("javascript running!");
-
+  console.log("Document ready!");
   getTasks();
-
+/*****************
+EVENT LISTENERS
+******************/
   $('#tasks').on('click', '.delete', function() {
-    var $el = $(this);
+    var $el = $(this); //save location of click to pass into deletTask function
     deleteTask($el)
   }); //button click to delete specific task from DB
   $('#tasks').on('click', '.update', updateTask); //button click to update task
   $('#submitNewTask').on('click', function() {
-    var $el = $(this);
+    var $el = $(this); //need to save location of click to pass into addTask function
     addTask($el, 'current_tasks');
   });
-
   $('#tasks').on('click', '.complete', completeTask);
-
+  // $('#completeTasks').on('click', )
 });
 
 function getTasks() { // route to get tasks from sever/db
@@ -22,8 +26,14 @@ function getTasks() { // route to get tasks from sever/db
     type: 'GET',
     url: '/tasks',
     success: function(tasks) {
-      console.log("Tasks received from GET request: ", tasks);
+      console.log("%cTasks received from GET request: ", "font-size: large; background-color: blue; color: yellow");
+      for (var i = 0; i < tasks.length; i++) {
+        console.log("%c" + tasks[i].task_name, "color: yellow; text-align: right");
+      }
       appendTasks(tasks);
+    },
+    error: function() {
+      console.log("Failed to GET tasks from server");
     }
   });
 }
@@ -45,6 +55,9 @@ function appendTasks(tasks) {
   }
 }
 
+
+//Delete task function: use this function to delete tasks on delete press
+//or when completing a task and moving to completed tasks table
 function deleteTask(clickLocation) {
   var taskId = $(clickLocation).parent().data('taskId');
   console.log($(this));
@@ -52,7 +65,7 @@ function deleteTask(clickLocation) {
 
   $.ajax({
     type: 'DELETE',
-    url: '/tasks/' + taskId,
+    url: '/tasks/' + taskId, //Which task to delete
     success: function(response) {
       console.log(response);
       getTasks();
