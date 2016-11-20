@@ -7,7 +7,7 @@ CREATE TABLE current_tasks (
  CREATE TABLE completed_tasks (
    id SERIAL PRIMARY KEY,
    task_name VARCHAR(50),
-   task_details VARCHAR(1000)
+   task_details VARCHAR(1000),
  );
 
  CREATE TABLE future_tasks (

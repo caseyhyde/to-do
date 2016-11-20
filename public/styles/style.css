@@ -8,3 +8,11 @@ nav > div{
 nav #currentTasks {
   background-color: green;
 }
+
+input {
+  border: none;
+}
+
+#newTask input {
+  border: 0.5px solid darkgrey;
+}

@@ -5,6 +5,7 @@ $(document).ready(function() {
 
   $('#tasks').on('click', '.delete', deleteTask); //button click to delete specific task from DB
   $('#tasks').on('click', '.update', updateTask); //button click to update task
+  $('#submitNewTask').on('click', addTask);
 
 });
 
@@ -80,5 +81,26 @@ function completeTask() {
 }
 
 function addTask() {
+  event.preventDefault();
+  var task = {};
+  var fields = $('#newTask').children().serializeArray();
+  fields.forEach(function(field) {
+    task[field.name] = field.value;
+  });
+  console.log("New task created: ", task);
+
+  $.ajax({
+    type: 'POST',
+    url: '/tasks',
+    data: task,
+    success: function() {
+      console.log("successfully added new task to database");
+      getTasks();
+      $('.newInput').val("");
+    },
+    error: function(response) {
+      console.log("Could not send new task to server. Error: ", response);
+    }
+  });
 
 }

@@ -12,7 +12,7 @@ router.get('/', function(req, res) { //route for getting tasks from database
       res.sendStatus(500); //send 500 status back to client.js
     }
 
-    client.query('SELECT * FROM tasks', function(err, result) {
+    client.query('SELECT * FROM current_tasks', function(err, result) {
       done(); //end query
 
       if(err) { //if error in query:
@@ -36,7 +36,7 @@ router.delete('/:taskId', function(req, res) {
       res.sendStatus(500);
     }
 
-    client.query('DELETE FROM tasks WHERE id = $1', [taskId], function(err, result) {
+    client.query('DELETE FROM current_tasks WHERE id = $1', [taskId], function(err, result) {
       done();
 
       if(err) {
@@ -59,7 +59,7 @@ router.put('/:taskId', function(req, res) {
       res.sendStatus(500);
     }
 
-    client.query('UPDATE tasks SET task_name=$1, task_details=$2' +
+    client.query('UPDATE current_tasks SET task_name=$1, task_details=$2' +
     'WHERE id=$3', [task.task_name, task.task_details, taskId], function(err, result) {
       done()
       if(err) {
@@ -71,5 +71,30 @@ router.put('/:taskId', function(req, res) {
     });//close query
   });//close connect
 });//end route
+
+router.post('/', function(req, res) {
+  var newTask = req.body;
+  console.log("Add task route hit!");
+
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log("Unable to add to database");
+      res.sendStatus(500);
+    }
+
+    client.query('INSERT INTO current_tasks (task_name, task_details)' +
+    'VALUES ($1, $2)', [newTask.newTaskName, newTask.newTaskDetails],
+    function(err, result) {
+      if(err) {
+        console.log("Query error: ", err);
+      } else {
+        res.sendStatus(201);
+      }
+    });//end query
+
+  });//close connect
+});//end route
+
+
 
 module.exports = router;
