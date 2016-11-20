@@ -27,8 +27,9 @@ router.get('/:getUrl', function(req, res) { //route for getting tasks from datab
   });
 });
 
-router.delete('/:taskId', function(req, res) {
+router.delete('/:taskId/:table', function(req, res) {
   var taskId = req.params.taskId;
+  var table = req.params.table;
   console.log('Delete Route Hit!');
 
   pg.connect(connectionString, function(err, client, done) {
@@ -37,7 +38,7 @@ router.delete('/:taskId', function(req, res) {
       res.sendStatus(500);
     }
 
-    client.query('DELETE FROM current_tasks WHERE id = $1', [taskId], function(err, result) {
+    client.query('DELETE FROM ' + table + ' WHERE id = $1', [taskId], function(err, result) {
       done();
 
       if(err) {
@@ -88,6 +89,7 @@ router.post('/:table', function(req, res) {
     client.query('INSERT INTO ' + table + '(task_name, task_details)' +
     'VALUES ($1, $2)', [newTask.task_name, newTask.task_details],
     function(err, result) {
+      done();
       if(err) {
         console.log("Query error: ", err);
       } else {
