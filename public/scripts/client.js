@@ -3,9 +3,17 @@ $(document).ready(function() {
 
   getTasks();
 
-  $('#tasks').on('click', '.delete', deleteTask); //button click to delete specific task from DB
+  $('#tasks').on('click', '.delete', function() {
+    var $el = $(this);
+    deleteTask($el)
+  }); //button click to delete specific task from DB
   $('#tasks').on('click', '.update', updateTask); //button click to update task
-  $('#submitNewTask').on('click', addTask);
+  $('#submitNewTask').on('click', function() {
+    var $el = $(this);
+    addTask($el, 'current_tasks');
+  });
+
+  $('#tasks').on('click', '.complete', completeTask);
 
 });
 
@@ -25,7 +33,8 @@ function appendTasks(tasks) {
   for (var i = 0; i < tasks.length; i++) {
     $('#tasks').append(
       '<div class="task" id="task' + tasks[i].id +
-      '"><input type="checkbox"/><input class="task_name" name="task_name" value="' +
+      '"><input class ="complete" type="checkbox"/>' +
+      '<input class="task_name" name="task_name" value="' +
       tasks[i].task_name + '"/><input class="task_details"' +
       'name="task_details" value="' + tasks[i].task_details +
       '"/><button class="delete">DELETE</button>' +
@@ -36,8 +45,9 @@ function appendTasks(tasks) {
   }
 }
 
-function deleteTask() {
-  var taskId = $(this).parent().data('taskId');
+function deleteTask(clickLocation) {
+  var taskId = $(clickLocation).parent().data('taskId');
+  console.log($(this));
   console.log("Task clicked ID: ", taskId);
 
   $.ajax({
@@ -77,13 +87,15 @@ function updateTask() {
 }
 
 function completeTask() {
-
+  var $el = $(this);
+  addTask($el, 'completed_tasks');
+  deleteTask($el);
 }
 
-function addTask() {
+function addTask(clickLocation, table) {
   event.preventDefault();
   var task = {};
-  var fields = $('#newTask').children().serializeArray();
+  var fields = $(clickLocation).parent().children().serializeArray();
   fields.forEach(function(field) {
     task[field.name] = field.value;
   });
@@ -91,7 +103,7 @@ function addTask() {
 
   $.ajax({
     type: 'POST',
-    url: '/tasks',
+    url: '/tasks/' + table,
     data: task,
     success: function() {
       console.log("successfully added new task to database");

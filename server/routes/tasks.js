@@ -72,8 +72,10 @@ router.put('/:taskId', function(req, res) {
   });//close connect
 });//end route
 
-router.post('/', function(req, res) {
+router.post('/:table', function(req, res) {
+  var table = req.params.table;
   var newTask = req.body;
+  console.log("req.params.table: ", req.params.table);
   console.log("Add task route hit!");
 
   pg.connect(connectionString, function(err, client, done) {
@@ -82,8 +84,8 @@ router.post('/', function(req, res) {
       res.sendStatus(500);
     }
 
-    client.query('INSERT INTO current_tasks (task_name, task_details)' +
-    'VALUES ($1, $2)', [newTask.newTaskName, newTask.newTaskDetails],
+    client.query('INSERT INTO ' + table + '(task_name, task_details)' +
+    'VALUES ($1, $2)', [newTask.task_name, newTask.task_details],
     function(err, result) {
       if(err) {
         console.log("Query error: ", err);
