@@ -26,4 +26,27 @@ router.get('/', function(req, res) { //route for getting tasks from database
   });
 });
 
+router.delete('/:taskId', function(req, res) {
+  var taskId = req.params.taskId;
+  console.log('Delete Route Hit!');
+
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log("Error deleting from database");
+      res.sendStatus(500);
+    }
+
+    client. query('DELETE FROM tasks WHERE id = $1', [taskId], function(err, result) {
+      done();
+
+      if(err) {
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(200);
+      }
+    });//close query function
+
+  }); //close connect
+}); //end route
+
 module.exports = router;
