@@ -95,4 +95,24 @@ router.put('/:taskid', function(req, res) {
     });//close query
   });//close connect
 });//Close route
+router.put('/completed/:taskid', function(req, res) {
+  var taskId = req.params.taskid;
+  var status = req.body;
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log("Error updating task in database");
+      res.sendStatus(500);
+    }
+    client.query('UPDATE tasks SET completed=$1' +
+    'WHERE id=$2', [status.completed, taskId], function(err, result) {
+      done();
+      if(err) {
+        console.log("Query error updating task in database");
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(200);
+      }
+    });//close query
+  });//close connect
+});//Close route
 module.exports = router;

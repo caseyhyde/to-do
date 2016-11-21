@@ -1,10 +1,12 @@
 $('document').ready(function() {
   console.log("Document ready");
   getCurrentTasks();
-  // getCompletedTasks();
   $('#newTask').on('submit', addTask);
   $('#tasks').on('click', '.delete', deleteCurrentTask);
   $('#tasks').on('click', '.update', updateCurrentTask);
+  $('#tasks').on('click', '.complete', completeCurrentTask);
+  $('#completedTasks').on('click', getCompletedTasks);
+  $('#currentTasks').on('click', getCurrentTasks);
 
 });
 
@@ -25,9 +27,9 @@ function getCompletedTasks() {
   $.ajax({
     type: 'GET',
     url: '/tasks/completedtasks',
-    success: function(response) {
-      console.log("Completed tasks received from server: ", response);
-      appendTasks(response);
+    success: function(tasks) {
+      console.log("Completed tasks received from server: ", tasks);
+      appendTasks(tasks);
     },
     error: function(response) {
       console.log("Error receiving completed tasks from server");
@@ -73,18 +75,22 @@ function addTask() {
   });//end ajax post
 }
 function deleteCurrentTask() {
-  var taskId = $(this).parent().data('taskId');
-  $.ajax({
-    type: 'DELETE',
-    url: '/tasks/' + taskId,
-    success: function() {
-      console.log("Deleted task successfully");
-      getCurrentTasks();
-    },
-    error: function(response) {
-      console.log("Error deleting response: ", response);
-    }
-  });
+  if (confirm("Are you sure you want to delete this task?")) {
+    var taskId = $(this).parent().data('taskId');
+    $.ajax({
+      type: 'DELETE',
+      url: '/tasks/' + taskId,
+      success: function() {
+        console.log("Deleted task successfully");
+        getCurrentTasks();
+      },
+      error: function(response) {
+        console.log("Error deleting response: ", response);
+      }
+    });
+  } else {
+    return console.log("User chose not to delete task");
+  }
 }
 function updateCurrentTask() {
   var taskId = $(this).parent().data('taskId');
@@ -99,10 +105,24 @@ function updateCurrentTask() {
     data: task,
     success: function() {
       console.log("successfully updated task");
-      getCurrentTasks();
+      // getCurrentTasks();
     },
     error: function(err) {
       console.log("Error in ajax PUT request to update task: ", err);
+    }
+  });
+}
+function completeCurrentTask() {
+  var taskId = $(this).parent().data('taskId');
+  $.ajax({
+    type: 'PUT',
+    url: '/tasks/completed/' + taskId,
+    data: {completed: true},
+    success: function() {
+      console.log("Successfully completed task");
+    },
+    error: function() {
+      console.log("Error completing task");
     }
   });
 }
