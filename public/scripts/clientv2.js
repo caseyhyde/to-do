@@ -17,6 +17,8 @@ function getCurrentTasks() {
     success: function(response) {
       console.log("Current tasks received from server: ", response);
       appendTasks(response);
+      $('#completedTasks').css('background-color', 'white');
+      $('#currentTasks').css('background-color', 'green');
     },
     error: function(response) {
       console.log("Error receiving current tasks from server");
@@ -30,6 +32,8 @@ function getCompletedTasks() {
     success: function(tasks) {
       console.log("Completed tasks received from server: ", tasks);
       appendTasks(tasks);
+      $('#completedTasks').css('background-color', 'green');
+      $('#currentTasks').css('background-color', 'white');
     },
     error: function(response) {
       console.log("Error receiving completed tasks from server");
@@ -120,9 +124,20 @@ function completeCurrentTask() {
     data: {completed: true},
     success: function() {
       console.log("Successfully completed task");
+      getCurrentTasks();
+      // completeTaskAnimation();
     },
     error: function() {
       console.log("Error completing task");
     }
   });
 }
+
+// function completeTaskAnimation() {
+//   var $el = $(this);
+//   removeTaskFromDom($el);
+// }
+//
+// function removeTaskFromDom(clickLocation) {
+//   $(clickLocation).parent().empty().fadeOut(1000);
+// }
