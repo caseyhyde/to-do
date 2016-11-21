@@ -37,5 +37,42 @@ router.get('/completedtasks', function(req, res) {
     });//close query
   });//close connect
 });//end route
-
+router.post('/', function(req, res) {
+  var newTask = req.body;
+  console.log("Post request received from client for new task");
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log("Could not connect to database to post new task");
+      res.sendStatus(500);
+    }
+    client.query('INSERT INTO tasks (task_name, task_details) VALUES ($1, $2)',
+    [newTask.task_name, newTask.task_details], function(err, result) {
+      if(err) {
+        console.log("Query error posting new task: ", err);
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(201);
+      }
+    });//end query
+  });//end connect
+});//end route
+router.delete('/:taskId', function(req, res) {
+  var taskId = req.params.taskId;
+  console.log("Delete route hit");
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log("Error deleting from database");
+      res.sendStatus(500);
+    }
+    client.query('DELETE FROM tasks WHERE  id=$1', [taskId], function(err, result) {
+      done();
+      if(err) {
+        console.log("Query error deleting current task");
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(200);
+      }
+    });//end query
+  });//end connect
+});//end route
 module.exports = router;

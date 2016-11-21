@@ -2,6 +2,8 @@ $('document').ready(function() {
   console.log("Document ready");
   getCurrentTasks();
   // getCompletedTasks();
+  $('#newTask').on('submit', addTask);
+  $('#tasks').on('click', '.delete', deleteCurrentTask);
 
 });
 
@@ -31,7 +33,6 @@ function getCompletedTasks() {
     }
   });
 }
-
 function appendTasks(tasks) {
   $('#tasks').empty();
   for (var i = 0; i < tasks.length; i++) {
@@ -47,4 +48,40 @@ function appendTasks(tasks) {
 
     $('#tasks').children().last().data('taskId', tasks[i].id);
   }
+}
+function addTask() {
+  event.preventDefault();
+  var task = {};
+  var fields = $(this).children().serializeArray();
+  fields.forEach(function(field) {
+    task[field.name] = field.value;
+  });//end forEach
+  console.log("New task created: ", task);
+  $.ajax({
+    type: 'POST',
+    url: '/tasks',
+    data: task,
+    success: function() {
+      console.log("successfully added new task to database");
+      getCurrentTasks();
+      $('.newInput').val("");
+    },
+    error: function(response) {
+      console.log("Could not send new task to server. Error: ", response);
+    }
+  });//end ajax post
+}
+function deleteCurrentTask() {
+  var taskId = $(this).parent().data('taskId');
+  $.ajax({
+    type: 'DELETE',
+    url: '/tasks/' + taskId,
+    success: function() {
+      console.log("Deleted task successfully");
+      getCurrentTasks();
+    },
+    error: function(response) {
+      console.log("Error deleting response: ", response);
+    }
+  });
 }

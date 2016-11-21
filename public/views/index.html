@@ -25,12 +25,13 @@
     <div id="newTask">
       <form id="createTask">
         <label for="newTaskName">New Task: </label>
-        <input class="newInput" type="text" name="task_name" id="newTaskName" />
+        <input class="newInput" type="text" name="task_name" id="newTaskName" required />
 
         <label for="newTaskDetails">Details: </label>
-        <input class="newInput" type="text" name="task_details" id="newTaskDetails">
+        <input class="newInput" type="text" name="task_details" id="newTaskDetails" />
 
-        <button id="submitNewTask">Add Task</button>
+        <input type="submit" value="ADD TASK">
+        <!-- <button id="submitNewTask">Add Task</button> -->
       </form>
     </div>
     <div id="tasks">
