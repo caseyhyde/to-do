@@ -75,4 +75,24 @@ router.delete('/:taskId', function(req, res) {
     });//end query
   });//end connect
 });//end route
+router.put('/:taskid', function(req, res) {
+  var taskId = req.params.taskid;
+  var task = req.body;
+  pg.connect(connectionString, function(err, client, done) {
+    if(err) {
+      console.log("Error updating task in database");
+      res.sendStatus(500);
+    }
+    client.query('UPDATE tasks SET task_name=$1, task_details=$2' +
+    'WHERE id=$3', [task.task_name, task.task_details, taskId], function(err, result) {
+      done();
+      if(err) {
+        console.log("Query error updating task in database");
+        res.sendStatus(500);
+      } else {
+        res.sendStatus(200);
+      }
+    });//close query
+  });//close connect
+});//Close route
 module.exports = router;

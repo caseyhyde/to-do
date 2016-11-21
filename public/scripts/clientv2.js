@@ -4,6 +4,7 @@ $('document').ready(function() {
   // getCompletedTasks();
   $('#newTask').on('submit', addTask);
   $('#tasks').on('click', '.delete', deleteCurrentTask);
+  $('#tasks').on('click', '.update', updateCurrentTask);
 
 });
 
@@ -82,6 +83,26 @@ function deleteCurrentTask() {
     },
     error: function(response) {
       console.log("Error deleting response: ", response);
+    }
+  });
+}
+function updateCurrentTask() {
+  var taskId = $(this).parent().data('taskId');
+  var task = {};
+  var fields = $(this).parent().children().serializeArray();
+  fields.forEach(function(field) {
+    task[field.name] = field.value;
+  });
+  $.ajax({
+    type: 'PUT',
+    url: '/tasks/' + taskId,
+    data: task,
+    success: function() {
+      console.log("successfully updated task");
+      getCurrentTasks();
+    },
+    error: function(err) {
+      console.log("Error in ajax PUT request to update task: ", err);
     }
   });
 }
